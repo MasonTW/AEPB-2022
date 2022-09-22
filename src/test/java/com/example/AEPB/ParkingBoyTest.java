@@ -2,6 +2,7 @@ package com.example.AEPB;
 
 import com.example.AEPB.model.CarInResult;
 import com.example.AEPB.model.ParkingResponse;
+import com.example.AEPB.model.PickUpResponse;
 import org.junit.jupiter.api.Test;
 
 import static com.example.AEPB.CarParking.INVALID_TOKEN;
@@ -134,7 +135,46 @@ public class ParkingBoyTest {
 
         ParkingResponse parkingResponse = parkingBoy.carIn("test1");
 
-        assertEquals(parkingResponse.getToken(),INVALID_TOKEN);
+        assertEquals(INVALID_TOKEN, parkingResponse.getToken());
+    }
+
+    @Test
+    void should_return_true_when_pick_up_succeed() {
+        var parkingBoy = new ParkingBoy();
+        var mockCarParkingNo1 = mock(CarParking.class);
+        when(mockCarParkingNo1.carOutRequest("test1"))
+                .thenReturn("陕A2233");
+        parkingBoy.addParking(mockCarParkingNo1);
+
+        PickUpResponse pickUpResponse = parkingBoy.carOut("test1");
+
+        assertTrue(pickUpResponse.getIsSucceed());
+    }
+
+    @Test
+    void should_return_false_when_pick_up_with_fake_token() {
+        var parkingBoy = new ParkingBoy();
+        var mockCarParkingNo1 = mock(CarParking.class);
+        when(mockCarParkingNo1.carOutRequest("fakeToken"))
+                .thenReturn(INVALID_TOKEN);
+        parkingBoy.addParking(mockCarParkingNo1);
+
+        PickUpResponse pickUpResponse = parkingBoy.carOut("fakeToken");
+
+        assertFalse(pickUpResponse.getIsSucceed());
+    }
+
+    @Test
+    void should_return_correct_car_card_when_car_out_succeed() {
+        var parkingBoy = new ParkingBoy();
+        var mockCarParkingNo1 = mock(CarParking.class);
+        when(mockCarParkingNo1.carOutRequest("token"))
+                .thenReturn("陕a8888");
+        parkingBoy.addParking(mockCarParkingNo1);
+
+        PickUpResponse pickUpResponse = parkingBoy.carOut("token");
+
+        assertEquals("陕a8888",pickUpResponse.getCarCard());
     }
 
 }
