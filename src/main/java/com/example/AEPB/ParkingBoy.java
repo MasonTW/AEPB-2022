@@ -10,6 +10,7 @@ import static com.example.AEPB.CarParking.INVALID_TOKEN;
 
 public class ParkingBoy {
     public static final String NO_THIS_CARD = "No this card";
+    public static final int NO_CARD_CODE = -1;
     private LinkedList<CarParking> parkingList = new LinkedList<>();
 
     public void addParking(CarParking carParking) {
@@ -35,12 +36,14 @@ public class ParkingBoy {
     }
 
     public PickUpResponse carOut(String token) {
-        var pickUpResponse = new PickUpResponse(false, NO_THIS_CARD);
+        var pickUpResponse = new PickUpResponse(false, NO_THIS_CARD, NO_CARD_CODE);
         for (int i = 0; i < parkingList.size(); i++) {
             String carCard = parkingList.get(i).carOutRequest(token);
             if (!carCard.equals(INVALID_TOKEN)) {
                 pickUpResponse.setSucceed(true);
                 pickUpResponse.setCarCard(carCard);
+                pickUpResponse.setCarParkingNum(i + 1);
+                break;
             }
         }
         return pickUpResponse;

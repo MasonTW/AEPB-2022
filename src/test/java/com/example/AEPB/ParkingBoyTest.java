@@ -4,7 +4,6 @@ import com.example.AEPB.model.CarInResult;
 import com.example.AEPB.model.ParkingResponse;
 import com.example.AEPB.model.PickUpResponse;
 import org.junit.jupiter.api.Test;
-
 import static com.example.AEPB.CarParking.INVALID_TOKEN;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -175,6 +174,23 @@ public class ParkingBoyTest {
         PickUpResponse pickUpResponse = parkingBoy.carOut("token");
 
         assertEquals("陕a8888",pickUpResponse.getCarCard());
+    }
+
+    @Test
+    void should_return_correct_parking_num_when_car_out_succeed() {
+        var parkingBoy = new ParkingBoy();
+        var mockCarParkingNo1 = mock(CarParking.class);
+        var mockCarParkingNo2 = mock(CarParking.class);
+        when(mockCarParkingNo1.carOutRequest("token2"))
+                .thenReturn(INVALID_TOKEN);
+        when(mockCarParkingNo2.carOutRequest("token2"))
+                .thenReturn("陕a8888");
+        parkingBoy.addParking(mockCarParkingNo1);
+        parkingBoy.addParking(mockCarParkingNo2);
+
+        PickUpResponse pickUpResponse = parkingBoy.carOut("token2");
+
+        assertEquals(2,pickUpResponse.getCarParkingNum());
     }
 
 }
