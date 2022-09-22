@@ -1,4 +1,4 @@
-package com.example.AEPB;
+package com.example.AEPB.model;
 
 public class ParkingResponse {
     private boolean result;

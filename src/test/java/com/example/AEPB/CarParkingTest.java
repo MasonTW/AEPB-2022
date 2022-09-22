@@ -1,5 +1,6 @@
 package com.example.AEPB;
 
+import com.example.AEPB.model.CarInResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

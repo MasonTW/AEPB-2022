@@ -1,5 +1,8 @@
 package com.example.AEPB;
 
+import com.example.AEPB.model.CarInResult;
+import com.example.AEPB.model.ParkingResponse;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 
