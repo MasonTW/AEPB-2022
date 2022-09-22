@@ -1,5 +1,6 @@
 package com.example.AEPB;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class ParkingBoy {
@@ -15,14 +16,21 @@ public class ParkingBoy {
     }
 
     public ParkingResponse carIn(String carCard) {
-       var parking = parkingList.stream().filter( it -> it.carInRequest(carCard).getIsSucceed() ).findFirst();
-       var parkingNum = 1;
-        if (parking.isPresent()) {
-            return new ParkingResponse(true, parkingNum);
-        }else {
-            return new ParkingResponse(false, parkingNum);
+        var parkingNum = 0;
+        CarInResult carInResult;
+        var parkingMap = new HashMap<Integer, CarParking>();
+        for (int i = 0; i < parkingList.size(); i++) {
+            if (parkingList.get(i).carInRequest(carCard).getIsSucceed()) {
+                parkingNum = i + 1;
+                break;
+            }
         }
 
+
+        if (parkingNum == 0) {
+            return new ParkingResponse(false, parkingNum);
+        }
+        return new ParkingResponse(true, parkingNum);
 
     }
 }

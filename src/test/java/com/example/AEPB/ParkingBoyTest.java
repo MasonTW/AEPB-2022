@@ -68,4 +68,20 @@ public class ParkingBoyTest {
         assertEquals(parkingResponse.getCarParkingNum(),1);
     }
 
+    @Test
+    void should_return_No2_parking_when_No1_not_available_but_No2_available() {
+        var parkingBoy = new ParkingBoy();
+        var mockCarParkingNo1 = mock(CarParking.class);
+        var mockCarParkingNo2 = mock(CarParking.class);
+        when(mockCarParkingNo1.carInRequest("test1"))
+                .thenReturn(new CarInResult(false, "token"));
+        when(mockCarParkingNo2.carInRequest("test1"))
+                .thenReturn(new CarInResult(true, "token"));
+        parkingBoy.addParking(mockCarParkingNo1);
+        parkingBoy.addParking(mockCarParkingNo2);
+
+        ParkingResponse parkingResponse = parkingBoy.carIn("test1");
+
+        assertEquals(parkingResponse.getCarParkingNum(),2);
+    }
 }
