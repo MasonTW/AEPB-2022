@@ -2,9 +2,8 @@ package com.example.AEPB;
 
 import com.example.AEPB.model.CarInResult;
 import com.example.AEPB.model.ParkingResponse;
-
-import java.util.HashMap;
 import java.util.LinkedList;
+import static com.example.AEPB.CarParking.INVALID_TOKEN;
 
 public class ParkingBoy {
     private LinkedList<CarParking> parkingList = new LinkedList<>();
@@ -19,21 +18,15 @@ public class ParkingBoy {
     }
 
     public ParkingResponse carIn(String carCard) {
-        var parkingNum = 0;
+        ParkingResponse parkingResponse = new ParkingResponse(false, 0, INVALID_TOKEN);
         CarInResult carInResult;
-        var parkingMap = new HashMap<Integer, CarParking>();
         for (int i = 0; i < parkingList.size(); i++) {
-            if (parkingList.get(i).carInRequest(carCard).getIsSucceed()) {
-                parkingNum = i + 1;
+            carInResult = parkingList.get(i).carInRequest(carCard);
+            if (carInResult.getIsSucceed()) {
+                parkingResponse = new ParkingResponse(carInResult.getIsSucceed(), i + 1, carInResult.getToken());
                 break;
             }
         }
-
-
-        if (parkingNum == 0) {
-            return new ParkingResponse(false, parkingNum);
-        }
-        return new ParkingResponse(true, parkingNum);
-
+        return parkingResponse;
     }
 }
