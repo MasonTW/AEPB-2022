@@ -1,10 +1,9 @@
 package com.example.AEPB;
 
-import com.example.AEPB.model.CarInResult;
 import com.example.AEPB.model.ParkingResponse;
 import com.example.AEPB.model.PickUpResponse;
-
 import java.util.LinkedList;
+import java.util.stream.IntStream;
 
 import static com.example.AEPB.CarParking.INVALID_TOKEN;
 
@@ -23,29 +22,31 @@ public class ParkingBoy {
     }
 
     public ParkingResponse carIn(String carCard) {
-        ParkingResponse parkingResponse = new ParkingResponse(false, 0, INVALID_TOKEN);
-        CarInResult carInResult;
-        for (int i = 0; i < parkingList.size(); i++) {
-            carInResult = parkingList.get(i).carInRequest(carCard);
-            if (carInResult.getIsSucceed()) {
-                parkingResponse = new ParkingResponse(carInResult.getIsSucceed(), i + 1, carInResult.getToken());
-                break;
-            }
-        }
-        return parkingResponse;
+        return IntStream.range(0, parkingList.size())
+                .boxed()
+                .map(it -> requestParkingResponse(carCard, it))
+                .filter(ParkingResponse::getIsResult)
+                .findFirst()
+                .orElse(new ParkingResponse(false, 0, INVALID_TOKEN));
     }
 
     public PickUpResponse carOut(String token) {
-        var pickUpResponse = new PickUpResponse(false, NO_THIS_CARD, NO_CARD_CODE);
-        for (int i = 0; i < parkingList.size(); i++) {
-            String carCard = parkingList.get(i).carOutRequest(token);
-            if (!carCard.equals(INVALID_TOKEN)) {
-                pickUpResponse.setSucceed(true);
-                pickUpResponse.setCarCard(carCard);
-                pickUpResponse.setCarParkingNum(i + 1);
-                break;
-            }
-        }
-        return pickUpResponse;
+        return IntStream.range(0, parkingList.size())
+                .boxed()
+                .map(it -> {
+                    var pickUpResult = parkingList.get(it).carOutRequest(token);
+                    var isPickUpSucceed = !pickUpResult.equals(INVALID_TOKEN);
+                    var carParkingNum = isPickUpSucceed ? it + 1 : 0;
+                    return new PickUpResponse(isPickUpSucceed, pickUpResult, carParkingNum);
+                }).filter(
+                        PickUpResponse::getIsSucceed
+                ).findFirst().orElse(
+                        new PickUpResponse(false,INVALID_TOKEN,0)
+                );
+    }
+
+    private ParkingResponse requestParkingResponse(String carCard, Integer it) {
+        var parkResult = parkingList.get(it).carInRequest(carCard);
+        return new ParkingResponse(parkResult.getIsSucceed(), it + 1, parkResult.getToken());
     }
 }
