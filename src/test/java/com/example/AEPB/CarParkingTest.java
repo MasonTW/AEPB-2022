@@ -2,7 +2,6 @@ package com.example.AEPB;
 
 import com.example.AEPB.model.CarInResult;
 import com.example.AEPB.model.CarParkingState;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

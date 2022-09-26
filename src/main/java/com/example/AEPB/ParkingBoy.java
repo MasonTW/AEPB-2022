@@ -2,15 +2,16 @@ package com.example.AEPB;
 
 import com.example.AEPB.model.ParkingResponse;
 import com.example.AEPB.model.PickUpResponse;
+
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.stream.IntStream;
 
 import static com.example.AEPB.CarParking.INVALID_TOKEN;
 
 public class ParkingBoy {
-    public static final String NO_THIS_CARD = "No this card";
-    public static final int NO_CARD_CODE = -1;
-    private LinkedList<CarParking> parkingList = new LinkedList<>();
+    public static final int NO_AVAILABLE_PARKING_CODE = -1;
+    private final LinkedList<CarParking> parkingList = new LinkedList<>();
 
     public void addParking(CarParking carParking) {
         this.parkingList.add(carParking);
@@ -22,12 +23,13 @@ public class ParkingBoy {
     }
 
     public ParkingResponse carIn(String carCard) {
-        return IntStream.range(0, parkingList.size())
+        final Integer availableCarParkingNum = IntStream.range(0, parkingList.size())
                 .boxed()
-                .map(it -> requestParkingResponse(carCard, it))
-                .filter(ParkingResponse::getIsResult)
-                .findFirst()
-                .orElse(new ParkingResponse(false, 0, INVALID_TOKEN));
+                .filter(it -> parkingList.get(it).checkParingState().isAvailable())
+                .max(Comparator.comparing(it -> parkingList.get(it).checkParingState().getAvailableCount()))
+                .orElse(NO_AVAILABLE_PARKING_CODE);
+
+        return requestParkingResponse(carCard, availableCarParkingNum);
     }
 
     public PickUpResponse carOut(String token) {
@@ -41,12 +43,15 @@ public class ParkingBoy {
                 }).filter(
                         PickUpResponse::getIsSucceed
                 ).findFirst().orElse(
-                        new PickUpResponse(false,INVALID_TOKEN,0)
+                        new PickUpResponse(false, INVALID_TOKEN, 0)
                 );
     }
 
-    private ParkingResponse requestParkingResponse(String carCard, Integer it) {
-        var parkResult = parkingList.get(it).carInRequest(carCard);
-        return new ParkingResponse(parkResult.getIsSucceed(), it + 1, parkResult.getToken());
+    private ParkingResponse requestParkingResponse(String carCard, Integer parkingNum) {
+        if (parkingNum == NO_AVAILABLE_PARKING_CODE) {
+            return new ParkingResponse(false, -1, INVALID_TOKEN);
+        }
+        var parkResult = parkingList.get(parkingNum).carInRequest(carCard);
+        return new ParkingResponse(parkResult.getIsSucceed(), parkingNum + 1, parkResult.getToken());
     }
 }
