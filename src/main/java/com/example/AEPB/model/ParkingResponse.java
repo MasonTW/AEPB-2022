@@ -1,9 +1,9 @@
 package com.example.AEPB.model;
 
 public class ParkingResponse {
-    private boolean result;
-    private int carParkingNum;
-    private String token;
+    private final boolean result;
+    private final int carParkingNum;
+    private final String token;
 
     public ParkingResponse(boolean result, int carParkingNum, String token) {
         this.result = result;

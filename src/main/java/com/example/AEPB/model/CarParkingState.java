@@ -1,8 +1,8 @@
 package com.example.AEPB.model;
 
 public class CarParkingState {
-    private boolean available;
-    private int availableCount;
+    private final boolean available;
+    private final int availableCount;
 
     public CarParkingState(boolean available, int availableCount) {
         this.available = available;
