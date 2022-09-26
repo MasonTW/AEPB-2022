@@ -1,6 +1,7 @@
 package com.example.AEPB;
 
 import com.example.AEPB.model.CarInResult;
+import com.example.AEPB.model.CarParkingState;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -45,5 +46,11 @@ public class CarParking {
 
     private String generateToken() {
         return UUID.randomUUID().toString();
+    }
+
+    public CarParkingState checkParingState() {
+        var availableCount = this.capacity - carParkingMap.size();
+        var available = availableCount > 0;
+        return new CarParkingState(available,availableCount);
     }
 }

@@ -1,8 +1,11 @@
 package com.example.AEPB;
 
 import com.example.AEPB.model.CarInResult;
+import com.example.AEPB.model.CarParkingState;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class CarParkingTest {
@@ -14,7 +17,7 @@ public class CarParkingTest {
 
         CarInResult carInResult = carParking.carInRequest(carCard);
 
-        Assertions.assertTrue(carInResult.getIsSucceed());
+        assertTrue(carInResult.getIsSucceed());
     }
 
     @Test
@@ -26,7 +29,7 @@ public class CarParkingTest {
         carParking.carInRequest(carCard1);
         CarInResult carInResult = carParking.carInRequest(carCard2);
 
-        Assertions.assertFalse(carInResult.getIsSucceed());
+        assertFalse(carInResult.getIsSucceed());
     }
 
     @Test
@@ -38,7 +41,7 @@ public class CarParkingTest {
         carParking.carInRequest(carCard1);
         CarInResult carInResult = carParking.carInRequest(carCard2);
 
-        Assertions.assertEquals(CarParking.UNABLE_TO_PARK_BY_PARKING_IS_FULL, carInResult.getToken());
+        assertEquals(CarParking.UNABLE_TO_PARK_BY_PARKING_IS_FULL, carInResult.getToken());
     }
 
     @Test
@@ -50,7 +53,7 @@ public class CarParkingTest {
 
         String actual = carParking.carOutRequest(token);
 
-        Assertions.assertEquals(carCard1, actual);
+        assertEquals(carCard1, actual);
     }
 
     @Test
@@ -61,7 +64,31 @@ public class CarParkingTest {
 
         String actual = carParking.carOutRequest(carInResult.getToken());
 
-        Assertions.assertEquals(CarParking.INVALID_TOKEN, actual);
+        assertEquals(CarParking.INVALID_TOKEN, actual);
+    }
+
+    @Test
+    void should_return_available_state_when_car_parking_is_available(){
+        CarParking carParking = new CarParking(3);
+        String carCard1 = "陕A12345";
+        CarInResult carInResult = carParking.carInRequest(carCard1);
+
+        CarParkingState actualState = carParking.checkParingState();
+
+        assertTrue(actualState.isAvailable());
+        assertEquals(2,actualState.getAvailableCount());
+    }
+
+    @Test
+    void should_return_not_available_state_when_car_parking_is_not_available(){
+        CarParking carParking = new CarParking(1);
+        String carCard1 = "陕A12345";
+        CarInResult carInResult = carParking.carInRequest(carCard1);
+
+        CarParkingState actualState = carParking.checkParingState();
+
+        assertFalse(actualState.isAvailable());
+        assertEquals(0,actualState.getAvailableCount());
     }
 
 }
